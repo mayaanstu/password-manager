@@ -1,5 +1,5 @@
 from getpass import getpass
-
+import string 
 try:
     with open("master.txt", "r") as file:
         master_password = file.read().strip()
@@ -22,6 +22,11 @@ def add_password():
 
 def view_passwords():
     print("You chose to view saved passwords.")
+    master_pass = getpass("Enter Master Password to view saved passwords: ")
+    while master_pass != master_password:
+        print("Incorrect Master Password.")
+        master_pass = getpass("Enter Master Password to view saved passwords: ")
+
     print("Saved Passwords:\n")
     with open("passwords.txt", "r") as file:    
         for line in file:
@@ -35,6 +40,11 @@ def view_passwords():
 
 def search_password():
     print("You chose to search for a password.")
+    master_pass = getpass("Enter Master Password to view saved passwords: ")
+    while master_pass != master_password:
+        print("Incorrect Master Password.")
+        master_pass = getpass("Enter Master Password to view saved passwords: ")
+
     website_to_search = input("Enter the website you want to search for: ").lower()
     found = False
     with open("passwords.txt", "r") as file:
@@ -54,6 +64,11 @@ def search_password():
 
 def delete_password():
     print("You chose to delete a website entry.")
+    master_pass = getpass("Enter Master Password to delete a website entry: ")
+    while master_pass != master_password:
+        print("Incorrect Master Password.")
+        master_pass = getpass("Enter Master Password to delete a website entry: ")
+        
     website_to_delete = input("Enter the website entry you want to delete: ").lower()
     found = False
     with open("passwords.txt", "r") as file:
@@ -73,6 +88,11 @@ def delete_password():
 
 def change_password():
     print("You chose to change a password.")
+    master_pass = getpass("Enter Master Password to change a password: ")
+    while master_pass != master_password:
+        print("Incorrect Master Password.")
+        master_pass = getpass("Enter Master Password to change a password: ")
+
     website_to_change = input("Enter the website for which you want to change the password: ").lower()
     found = False
     with open("passwords.txt", "r") as file:
@@ -165,7 +185,7 @@ def check_password_strength():
     elif not any(char.islower() for char in password_to_check):
         print("Weak password: Password should contain at least one lowercase letter.")
         flag = False
-    elif not any(char in "!@#$%^&*()-_=+[{]}|\;:'\,<.>/?`~" for char in password_to_check):
+    elif any(char in string.punctuation for char in password_to_check):
         print("Weak password: Password should contain at least one special character.")
         flag = False
     else:
