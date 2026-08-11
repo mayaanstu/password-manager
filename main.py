@@ -6,11 +6,20 @@ try:
 except FileNotFoundError:
     master_password = ""
 
+def num_input_check(prompt):
+    while True:
+        try:
+            value = int(input(prompt))
+            return value
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+
 def add_password():
     print("You chose to add a password.")
     website = input("Website: ")
     username = input("Username: ")
-    password = input("Enter your password (3-20 characters): ")
+    password = getpass("Enter your password (3-20 characters): ")
     if len(password) < 3 or len(password) > 20:
        print("Password must be between 3 and 20 characters.")
     else:
@@ -34,7 +43,6 @@ def view_passwords():
             print(f"Password: {'*' * len(password)}")
             choice = input("Reveal password? (y/n): ").lower()
             if choice == "y":
-                entered_master_password = getpass("Enter the master password to reveal the password: ")
                 verify_master_password()
                 print(f"Password: {password}")
             print("_________________________")
@@ -58,7 +66,6 @@ def search_password():
                 print(f"Password: {'*' * len(password)}")
                 choice = input("Reveal password? (y/n): ").lower()
                 if choice == "y":
-                    entered_master_password = getpass("Enter the master password to reveal the password: ")
                     verify_master_password()
                     print(f"Password: {password}")
                 print("_________________________")
@@ -114,18 +121,29 @@ def change_password():
         print("No website entry found for the specified website.")
 
 def generate_password():
-    print("You chose to generate a password.")
-    import random
+    import secrets
     import string
+    print("You chose to generate a strong password.")
+    length = num_input_check("Enter the desired password length (8-20): ")
+    if length < 8 or length > 20:
+        print("Strong password length must be between 8 and 20 characters.")
+        return
+    uppercase = string.ascii_uppercase
+    lowercase = string.ascii_lowercase
+    numbers = string.digits
+    special = string.punctuation
+    characters = uppercase + lowercase + numbers + special
+    password = []
+    password.append(secrets.choice(uppercase))
+    password.append(secrets.choice(lowercase))
+    password.append(secrets.choice(numbers))
+    password.append(secrets.choice(special))
+    for _ in range(length - 4):
+        password.append(secrets.choice(characters))
+    secrets.SystemRandom().shuffle(password)
+    password = "".join(password)
+    print("Generated strong password:", password)
 
-    length = int(input("Enter the desired password length (3-20): "))
-    if length < 3 or length > 20:
-        print("Password length must be between 3 and 20 characters.")
-    else:
-        characters = string.ascii_letters + string.digits + string.punctuation
-        password = ''.join(random.choice(characters) for _ in range(length))
-        print("Generated password:", password)
-    
 
 def change_master_password():
         global master_password
@@ -213,10 +231,10 @@ def check_password_strength():
 if master_password == "":
     print("No master password set. Please set a master password first.")
     change_master_password()
-entered_master_password = input("Enter the master password: ")
+entered_master_password = getpass("Enter the master password: ")
 while entered_master_password != master_password:
     print("Incorrect master password.")
-    entered_master_password = input("Enter the master password again: ")
+    entered_master_password = getpass("Enter the master password again: ")
 
 while True: 
     print("_________________________")
@@ -228,43 +246,44 @@ while True:
     print("3. Search For Password")
     print("4. Delete a Website Entry")
     print("5. Change Password")
-    print("6. Generate Password")
-    print("7. Change Master Password")
+    print("6. Change Master Password")
+    print("7. Generate a Strong Password")
     print("8. Check Password Strength")
     print("9. Exit The Program")
 
 
-    choice = input("\nChoose an option (1-9): ")
+    choice = num_input_check("\nChoose an option (1-9): ")
     print("You chose:", choice)
 
-    if choice == "1":
+    if choice == 1:
         add_password()
 
-    elif choice == "2":
+    elif choice == 2:
         view_passwords()
 
-    elif choice == "3":
+    elif choice == 3:
         search_password()
 
-    elif choice == "4":
+    elif choice == 4:
         delete_password()
     
-    elif choice == "5":
+    elif choice == 5:
         change_password()
     
-    elif choice == "6":
-        generate_password()
-
-    elif choice == "7":
+    
+    elif choice == 6:
         change_master_password()
 
-    elif choice == "8":
+    
+    elif choice == 7:
+        generate_password()
+
+    elif choice == 8:
         check_password_strength()
 
-    elif choice == "9":
+    elif choice == 9:
         print("Exiting the program...")
         break
 
     else:
         print("Invalid choice. Please select a valid option.")
-
