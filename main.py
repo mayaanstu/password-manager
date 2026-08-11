@@ -22,10 +22,7 @@ def add_password():
 
 def view_passwords():
     print("You chose to view saved passwords.")
-    master_pass = getpass("Enter Master Password to view saved passwords: ")
-    while master_pass != master_password:
-        print("Incorrect Master Password.")
-        master_pass = getpass("Enter Master Password to view saved passwords: ")
+    verify_master_password()
 
     print("Saved Passwords:\n")
     with open("passwords.txt", "r") as file:    
@@ -34,16 +31,18 @@ def view_passwords():
             website, username, password = line.split(",")
             print(f"Website : {website}")
             print(f"Username: {username}")
-            print(f"Password: {password}")
+            print(f"Password: {'*' * len(password)}")
+            choice = input("Reveal password? (y/n): ").lower()
+            if choice == "y":
+                entered_master_password = getpass("Enter the master password to reveal the password: ")
+                verify_master_password()
+                print(f"Password: {password}")
             print("_________________________")
 
 
 def search_password():
     print("You chose to search for a password.")
-    master_pass = getpass("Enter Master Password to view saved passwords: ")
-    while master_pass != master_password:
-        print("Incorrect Master Password.")
-        master_pass = getpass("Enter Master Password to view saved passwords: ")
+    verify_master_password()
 
     website_to_search = input("Enter the website you want to search for: ").lower()
     found = False
@@ -56,7 +55,12 @@ def search_password():
                 print("Password found!")
                 print(f"Website : {website}")
                 print(f"Username: {username}")
-                print(f"Password: {password}")
+                print(f"Password: {'*' * len(password)}")
+                choice = input("Reveal password? (y/n): ").lower()
+                if choice == "y":
+                    entered_master_password = getpass("Enter the master password to reveal the password: ")
+                    verify_master_password()
+                    print(f"Password: {password}")
                 print("_________________________")
         if not found:
             print("No password found for the specified website.")
@@ -64,11 +68,8 @@ def search_password():
 
 def delete_password():
     print("You chose to delete a website entry.")
-    master_pass = getpass("Enter Master Password to delete a website entry: ")
-    while master_pass != master_password:
-        print("Incorrect Master Password.")
-        master_pass = getpass("Enter Master Password to delete a website entry: ")
-        
+    verify_master_password()
+
     website_to_delete = input("Enter the website entry you want to delete: ").lower()
     found = False
     with open("passwords.txt", "r") as file:
@@ -88,10 +89,7 @@ def delete_password():
 
 def change_password():
     print("You chose to change a password.")
-    master_pass = getpass("Enter Master Password to change a password: ")
-    while master_pass != master_password:
-        print("Incorrect Master Password.")
-        master_pass = getpass("Enter Master Password to change a password: ")
+    verify_master_password()
 
     website_to_change = input("Enter the website for which you want to change the password: ").lower()
     found = False
@@ -185,7 +183,7 @@ def check_password_strength():
     elif not any(char.islower() for char in password_to_check):
         print("Weak password: Password should contain at least one lowercase letter.")
         flag = False
-    elif any(char in string.punctuation for char in password_to_check):
+    elif not any(char in string.punctuation for char in password_to_check):
         print("Weak password: Password should contain at least one special character.")
         flag = False
     else:
@@ -205,7 +203,7 @@ def check_password_strength():
         elif not any(char.islower() for char in password_to_check):
             print("Weak password: Password should contain at least one lowercase letter.")
             flag = False
-        elif not any(char in "!@#$%^&*()-_=+[{]}|\;:'\,<.>/?`~" for char in password_to_check):
+        elif not any(char in string.punctuation for char in password_to_check):
             print("Weak password: Password should contain at least one special character.")
             flag = False
         else:

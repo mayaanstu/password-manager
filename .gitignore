@@ -1,0 +1,4 @@
+master.txt
+passwords.txt
+__pycache__/
+*.pyc
